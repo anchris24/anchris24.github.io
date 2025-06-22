@@ -142,4 +142,57 @@
 
 			});
 
+	// Smooth scrolling for experience page navigation.
+		$body.on('click', 'a[href*="experience.html#"]', function(event) {
+			
+			event.preventDefault();
+			
+			var href = $(this).attr('href');
+			var targetId = href.split('#')[1];
+			
+			// Navigate to experience.html with target as URL parameter
+			window.location.href = 'experience.html?scroll=' + targetId;
+		});
+
+	// Handle smooth scrolling on experience page load
+		$(document).ready(function() {
+			// Check if we're on experience page and have a scroll parameter
+			if (window.location.pathname.includes('experience.html')) {
+				var urlParams = new URLSearchParams(window.location.search);
+				var targetId = urlParams.get('scroll');
+				
+				if (targetId) {
+					// Wait a bit for page to fully load, then animate
+					setTimeout(function() {
+						// First scroll to top
+						$('html, body').animate({
+							scrollTop: 0
+						}, 800, function() {
+							// Then scroll to target section
+							var targetElement = $('#' + targetId);
+							if (targetElement.length) {
+								$('html, body').animate({
+									scrollTop: targetElement.offset().top - 100
+								}, 1000);
+							}
+						});
+					}, 300);
+				}
+			}
+		});
+
+	// Smooth scrolling for section navigation buttons on experience page
+		$body.on('click', '.section-nav a[href^="#"]', function(event) {
+			event.preventDefault();
+			
+			var targetId = $(this).attr('href').substring(1);
+			var targetElement = $('#' + targetId);
+			
+			if (targetElement.length) {
+				$('html, body').animate({
+					scrollTop: targetElement.offset().top - 100
+				}, 1000);
+			}
+		});
+
 })(jQuery);

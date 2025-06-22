@@ -61,6 +61,20 @@
 									<h3 class="major">Vitae phasellus</h3>
 									<p>Cras mattis ante fermentum, malesuada neque vitae, eleifend erat. Phasellus non pulvinar erat. Fusce tincidunt, nisl eget mattis egestas, purus ipsum consequat orci, sit amet lobortis lorem lacus in tellus. Sed ac elementum arcu. Quisque placerat auctor laoreet.</p>
 
+									<!-- Sliding Gallery Start -->
+									<div id="sliding-gallery" style="width: 100vw; margin: 0 calc(-50vw + 50% ) 2em calc(-50vw + 50% ); text-align: center; position: relative;">
+										<div id="gallery-viewport" style="overflow: hidden; width: 100vw; height: 50vw; max-height: 400px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+											<div id="gallery-slider" style="display: flex; transition: transform 0.5s cubic-bezier(.77,0,.18,1); will-change: transform; height: 100%;">
+												<!-- Slides will be injected by JS -->
+											</div>
+										</div>
+										<div style="margin-top: 0.5em; display: flex; justify-content: center; gap: 2em;">
+											<button id="gallery-prev" style="background: none; border: 1px solid #aaa; border-radius: 50%; font-size: 1.2em; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">&#8592;</button>
+											<button id="gallery-next" style="background: none; border: 1px solid #aaa; border-radius: 50%; font-size: 1.2em; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">&#8594;</button>
+										</div>
+									</div>
+									<!-- Sliding Gallery End -->
+
 									<section class="features">
 										<article>
 											<a href="#" class="image"><img src="images/pic04.jpg" alt="" /></a>
@@ -129,6 +143,76 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script>
+			// Sliding Gallery JavaScript
+			const galleryData = [
+				{ img: 'images/anne.jpg', caption: 'Anne enjoying a day out' },
+				{ img: 'images/graduation.jpg', caption: 'Graduation celebration' },
+				{ img: 'images/anneHome.jpg', caption: 'Anne at home' },
+
+			];
+			let galleryIndex = 0;
+			const slider = document.getElementById('gallery-slider');
+			const viewport = document.getElementById('gallery-viewport');
+
+			function getSlideWidth() {
+				return viewport.offsetWidth;
+			}
+
+			// Create slides
+			function renderSlides() {
+				const slideWidth = getSlideWidth();
+				slider.innerHTML = galleryData.map(item => `
+					<div class="gallery-slide" style="width: ${slideWidth}px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: center;">
+						<img src="${item.img}" alt="Gallery Image" style="width: 100%; height: 80%; max-height: 350px; object-fit: contain; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+						<div style="margin-top: 0.5em; font-size: 1.1em; color: #444;">${item.caption}</div>
+					</div>
+				`).join('');
+			}
+
+			function updateGallery(animated = true) {
+				const slideWidth = getSlideWidth();
+				if (!animated) slider.style.transition = 'none';
+				else slider.style.transition = 'transform 0.5s cubic-bezier(.77,0,.18,1)';
+				slider.style.transform = `translateX(-${galleryIndex * slideWidth}px)`;
+			}
+
+			document.getElementById('gallery-prev').onclick = function() {
+				galleryIndex = (galleryIndex - 1 + galleryData.length) % galleryData.length;
+				updateGallery();
+			};
+			document.getElementById('gallery-next').onclick = function() {
+				galleryIndex = (galleryIndex + 1) % galleryData.length;
+				updateGallery();
+			};
+			// Optional: swipe support for mobile
+			let startX = null;
+			slider.addEventListener('touchstart', function(e) {
+				startX = e.touches[0].clientX;
+			});
+			slider.addEventListener('touchend', function(e) {
+				if (startX === null) return;
+				let endX = e.changedTouches[0].clientX;
+				if (endX - startX > 50) {
+					document.getElementById('gallery-prev').click();
+				} else if (startX - endX > 50) {
+					document.getElementById('gallery-next').click();
+				}
+				startX = null;
+			});
+			// Ensure gallery always lands on a single image
+			slider.addEventListener('transitionend', function() {
+				updateGallery(false);
+			});
+			// Re-render and update on resize
+			window.addEventListener('resize', () => {
+				renderSlides();
+				updateGallery(false);
+			});
+			// Initial render
+			renderSlides();
+			updateGallery(false);
+			</script>
 
 	</body>
 </html>
