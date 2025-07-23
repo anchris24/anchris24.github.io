@@ -4419,3 +4419,8 @@ input, select, textarea {
   min-width: 0; /* Allow content to shrink */
 }
 
+.features.horizontal-cards .single-image a.special {
+  margin-top: 1.5em;
+  display: inline-block;
+}
+
